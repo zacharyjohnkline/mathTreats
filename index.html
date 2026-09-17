@@ -29,6 +29,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
+  touch-action:manipulation;
   background-color:var(--cream);
   background-image:
     radial-gradient(var(--dot) 2px, transparent 2px),
@@ -43,6 +44,13 @@ body{
 .wrap{max-width:600px;margin:0 auto;padding:16px 14px 44px}
 h1,h2,h3{font-family:Fredoka,Nunito,system-ui,sans-serif;font-weight:600;margin:0}
 .card{background:var(--card);border:3px solid var(--line);border-radius:26px;box-shadow:0 8px 0 var(--shade);padding:18px}
+button,label.pick,.chip,.lvl,.key{
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  user-select:none;
+}
 button{font-family:inherit;color:inherit;cursor:pointer}
 button:focus-visible,label:focus-within{outline:3px solid var(--mint);outline-offset:3px}
 .svgicon{display:block;width:100%;height:100%}
@@ -132,7 +140,7 @@ button:focus-visible,label:focus-within{outline:3px solid var(--mint);outline-of
 .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 .key{border:3px solid var(--line);background:var(--card);border-radius:18px;font-family:Fredoka,sans-serif;
   font-size:25px;font-weight:600;padding:11px 0;box-shadow:0 5px 0 var(--shade);transition:transform .08s ease,box-shadow .08s ease}
-.key:active{transform:translateY(3px);box-shadow:0 2px 0 var(--shade)}
+.key:active,.key.tapped{transform:translateY(3px);box-shadow:0 2px 0 var(--shade)}
 .key.check{grid-column:span 3;background:var(--mint);box-shadow:0 5px 0 #2E9C86;font-size:21px;color:#12332D}
 .key.check:active{box-shadow:0 2px 0 #2E9C86}
 .key.wipe{background:var(--lemon);box-shadow:0 5px 0 #D9A420;color:#4A2B2B}
@@ -795,6 +803,20 @@ var ART = (function(){
     if(h) h.innerHTML = '<g transform="translate(-40 -89) scale(.8)">'+ART.charBody(save.char, mood)+'</g>';
   }
 
+  function tapBind(node, fn){
+    var last = 0;
+    node.addEventListener("touchstart", function(e){
+      e.preventDefault();               // stops iOS treating a fast repeat tap as a zoom
+      last = Date.now();
+      node.classList.add("tapped");
+      setTimeout(function(){ node.classList.remove("tapped"); }, 130);
+      fn();
+    }, { passive:false });
+    node.addEventListener("click", function(){
+      if(Date.now() - last < 800) return;
+      fn();
+    });
+  }
   function buildPad(){
     var pad = el("pad");
     pad.innerHTML = "";
@@ -804,12 +826,12 @@ var ART = (function(){
       if(k === "clear"){ b.className = "key wipe"; b.textContent = "C"; b.setAttribute("aria-label","Clear"); }
       else if(k === "back"){ b.className = "key wipe"; b.innerHTML = "&#9003;"; b.setAttribute("aria-label","Delete a digit"); }
       else { b.className = "key"; b.textContent = k; }
-      b.addEventListener("click", function(){ press(k); });
+      tapBind(b, function(){ press(k); });
       pad.appendChild(b);
     });
     var c = document.createElement("button");
     c.type = "button"; c.className = "key check"; c.textContent = "Check it";
-    c.addEventListener("click", function(){ press("enter"); });
+    tapBind(c, function(){ press("enter"); });
     pad.appendChild(c);
   }
   function press(k){
