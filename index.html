@@ -167,6 +167,45 @@ button:focus-visible,label:focus-within{outline:3px solid var(--mint);outline-of
 .key.wipe{background:#FFCE4F;box-shadow:0 4px 0 #D9A420;border-color:#FFCE4F}
 .key.wipe:active,.key.wipe.tapped{box-shadow:0 1px 0 #D9A420}
 
+.lvl .lvlbtns{display:flex;gap:6px;padding:0 9px 10px}
+.lvl .lvlbtns button{flex:1;border:3px solid var(--line);background:var(--card);border-radius:14px;
+  font-family:Fredoka,sans-serif;font-size:13.5px;font-weight:600;padding:7px 0;color:var(--cocoa)}
+.lvl .lvlbtns button.go{background:var(--frosting);border-color:var(--frosting);color:#4A2B2B}
+.lvl .lvlbtns button.roam{background:var(--mint);border-color:var(--mint);color:#12332D}
+.lvl.locked .lvlbtns button{background:var(--lock);border-color:var(--line);color:var(--cocoa-soft)}
+
+.stickzone{position:relative;height:150px}
+.stick{position:absolute;left:6px;bottom:4px;width:134px;height:134px;border-radius:50%;
+  background:rgba(255,255,255,.34);border:3px solid rgba(255,255,255,.75);touch-action:none;
+  box-shadow:0 4px 16px rgba(120,60,90,.18)}
+.stick b{position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;
+  background:rgba(255,255,255,.96);box-shadow:0 4px 12px rgba(120,60,90,.28);pointer-events:none}
+.talk{position:absolute;right:6px;bottom:30px;border:0;border-radius:24px;padding:15px 24px;
+  background:#FF7FA8;color:#4A2B2B;font-family:Fredoka,sans-serif;font-size:20px;font-weight:600;
+  box-shadow:0 6px 0 #C43E77;transition:opacity .18s ease,transform .1s ease}
+.talk:active{transform:translateY(4px);box-shadow:0 2px 0 #C43E77}
+.talk[disabled]{opacity:.32}
+.hint{margin:8px auto 0;background:rgba(255,255,255,.88);border-radius:999px;padding:6px 14px;
+  font-weight:800;font-size:12.5px;width:max-content;max-width:94%;text-align:center;
+  box-shadow:0 3px 10px rgba(120,60,90,.14)}
+.bottomcard{position:absolute;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom, 0px) + 10px);
+  max-width:430px;margin:0 auto;background:rgba(255,255,255,.93);border-radius:26px;padding:12px;
+  box-shadow:0 8px 24px rgba(120,60,90,.22);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);
+  color:#4A2B2B;z-index:3}
+.bottomcard.shake{animation:shake .4s ease}
+.who{display:flex;align-items:center;gap:9px;margin:0 0 7px}
+.who .face{width:42px;height:56px;flex:0 0 auto}
+.who b{font-family:Fredoka,sans-serif;font-size:19px;font-weight:600}
+.who i{font-style:normal;font-size:11.5px;font-weight:800;color:#8A6663;display:block}
+.dlgtext{margin:0 0 10px;font-size:14.5px;font-weight:700;line-height:1.4}
+.dlgbtns{display:flex;gap:8px}
+.dlgbtns button{flex:1;border:3px solid #F3CEDC;background:#fff;border-radius:16px;
+  font-family:Fredoka,sans-serif;font-size:16px;font-weight:600;padding:10px 0;color:#4A2B2B;
+  box-shadow:0 4px 0 rgba(196,62,119,.16)}
+.dlgbtns button.yes{background:#4FCDB4;border-color:#4FCDB4;box-shadow:0 4px 0 #2E9C86;color:#12332D}
+.qgoal{margin:0 0 6px;text-align:center;font-size:11.5px;font-weight:800;color:#8A6663}
+.qgoal b{color:#C43E77}
+.wordq{margin:0 0 9px;text-align:center;font-size:15px;font-weight:700;line-height:1.35}
 .reward{text-align:center}
 .reward h2{font-size:31px;color:var(--berry)}
 .scoreline{font-family:Fredoka,sans-serif;font-size:40px;font-weight:600;margin:4px 0 0}
@@ -211,7 +250,7 @@ button:focus-visible,label:focus-within{outline:3px solid var(--mint);outline-of
   </section>
 
   <section id="screen-home" class="hidden">
-    <div class="hero"><h1>Sweet Treat Trail</h1><p>Answer facts to walk the trail. Fast answers in a row score big.</p></div>
+    <div class="hero"><h1>Sweet Treat Trail</h1><p>Walk the trail, or explore each land and help the treats with their quests.</p></div>
     <div class="card">
       <div class="stage3d" id="homeStage"><span class="spin-hint">drag to spin</span></div>
       <p class="char-name" id="homeName">Cupcake</p>
@@ -264,7 +303,7 @@ button:focus-visible,label:focus-within{outline:3px solid var(--mint);outline-of
 
 <section id="screen-play" class="hidden">
   <div id="scene3d"></div>
-  <div class="hud">
+  <div class="hud" id="hudTrail">
     <div>
       <div class="hud-top">
         <div class="pill"><b id="timeStat">0:00</b><i>TIME</i></div>
@@ -289,6 +328,42 @@ button:focus-visible,label:focus-within{outline:3px solid var(--mint);outline-of
       <p class="verdict" id="verdict"></p>
       <div class="pad" id="pad"></div>
     </div>
+  </div>
+
+  <div class="hud hidden" id="hudRoam">
+    <div>
+      <div class="hud-top">
+        <div class="pill"><b id="sprinkleStat">0</b><i>SPRINKLES</i></div>
+        <div class="pill"><b id="questStat">0/3</b><i>QUESTS</i></div>
+        <div style="flex:1"></div>
+        <button class="hud-btn" id="soundBtn2" aria-label="Turn sound off">&#128266;</button>
+        <button class="hud-btn" id="quitBtn2" aria-label="Back to the map">&#10005;</button>
+      </div>
+      <p class="hint" id="roamHint">Find a friend with a gold marker above them</p>
+    </div>
+    <div class="mid"><div id="popLayer2"></div></div>
+    <div class="stickzone">
+      <div class="stick" id="stick"><b id="stickKnob"></b></div>
+      <button class="talk" id="talkBtn" disabled>Talk</button>
+    </div>
+  </div>
+
+  <div class="bottomcard hidden" id="dlgCard">
+    <p class="who"><span class="face" id="dlgFace"></span><span><b id="dlgName">Poppy</b><i id="dlgRole"></i></span></p>
+    <p class="dlgtext" id="dlgText"></p>
+    <div class="dlgbtns">
+      <button class="yes" id="dlgYes">Let's go!</button>
+      <button id="dlgNo">Maybe later</button>
+    </div>
+  </div>
+
+  <div class="bottomcard hidden" id="questCard">
+    <p class="qgoal" id="qGoal"></p>
+    <p class="wordq hidden" id="qText"></p>
+    <div class="eq"><p class="problem" id="qProblem">6 &times; 7 =</p>
+      <div class="answer-slot empty" id="qSlot" role="status" aria-live="polite">?</div></div>
+    <p class="verdict" id="qVerdict"></p>
+    <div class="pad" id="qPad"></div>
   </div>
 </section>
 <script>
@@ -698,6 +773,12 @@ var WORLD = (function(){
       g.add(at(sph(.46, "#FFFFFF"), -.6, .82, 0));
       g.add(at(sph(.46, "#FFFFFF"), .6, .82, 0));
       g.add(at(sph(.4, "#FFFFFF"), 0, .78, .45));
+    } else if(id === "cap"){
+      var dome = new THREE.Mesh(keep(new THREE.SphereGeometry(1.0, 16, 10, 0, Math.PI*2, 0, Math.PI/2)), mat("#E8734A"));
+      dome.position.y = -.04; g.add(dome);
+      var brim = cyl(.92, .92, .15, "#C95A36", 18);
+      brim.position.set(0, -.02, .82); brim.scale.z = .85; g.add(brim);
+      g.add(at(sph(.19, "#FFD86B"), 0, .92, 0));
     } else if(id === "star"){
       var st = starMesh(.46, .16, "#FFD86B");
       st.position.set(0, 0, 0); g.add(st);
@@ -792,6 +873,12 @@ var WORLD = (function(){
       g.add(at(cyl(.045, .045, 3.2, "#FFFFFF", 6), .1, 2.0, -.2));
       var b = sph(1.0, "#FF8FB4"); b.scale.set(1, 1.18, 1); b.position.set(.2, 4.5, -.4); g.add(b);
       g.add(at(cone(.22, .4, "#E8608F", 10), .2, 3.5, -.4));
+    } else if(id === "pack"){
+      g.add(at(box(1.9, 1.9, 1.0, "#7FB2F0"), 0, .35, -.45));
+      g.add(at(box(1.95, .5, 1.06, "#5B8FD6"), 0, 1.0, -.47));
+      g.add(at(box(.32, 1.9, .3, "#5B8FD6"), -.78, .35, .35));
+      g.add(at(box(.32, 1.9, .3, "#5B8FD6"), .78, .35, .35));
+      g.add(at(sph(.22, "#FFD86B"), 0, .35, -1.0));
     } else if(id === "wand"){
       var stick = cyl(.09, .09, 2.6, "#FFF0DB", 8);
       stick.position.set(1.5, .5, .2); stick.rotation.z = -.28; g.add(stick);
@@ -895,8 +982,22 @@ var WORLD = (function(){
     var m = tor(.2*s, .055*s, INK, Math.PI); m.rotation.z = Math.PI; m.position.set(0, y - .3*s, z);
     g.add(e1); g.add(e2); g.add(m);
   }
-  function propMesh(type, cols, s){
+  function propMesh(type, cols, s, simple){
     var g = new THREE.Group(), c1 = cols[0] || "#FF8FB4", c2 = cols[1] || "#E8608F", i;
+    if(simple){
+      if(type === "lollipop" || type === "scoopTree"){
+        g.add(at(cyl(.2, .26, 3.4, "#D99B5F", 6), 0, 1.7, 0));
+        g.add(at(sph(1.7, c1, 10, 8), 0, 4.2, 0));
+      } else if(type === "candle" || type === "cane"){
+        g.add(at(cyl(.6, .6, 4.2, c1, 8), 0, 2.1, 0));
+        g.add(at(cone(.4, 1.0, "#FFD86B", 8), 0, 4.8, 0));
+      } else {
+        var dm = sph(1.9, c1, 10, 8); dm.scale.y = 1.1; dm.position.y = 1.8; g.add(dm);
+        g.add(at(cyl(1.8, 1.8, .4, c2, 10), 0, .2, 0));
+      }
+      g.scale.setScalar(s || 1);
+      return g;
+    }
     if(type === "lollipop"){
       g.add(at(cyl(.16, .16, 4.4, "#FFF0DB", 10), 0, 2.2, 0));
       var head = cyl(1.75, 1.75, .45, c1, 22); head.rotation.x = Math.PI/2; head.position.y = 5;
@@ -921,7 +1022,7 @@ var WORLD = (function(){
     } else { /* bush */
       var dome = sph(1.9, c1); dome.scale.y = 1.15; dome.position.y = 1.9; g.add(dome);
       g.add(at(cyl(1.85, 1.85, .4, c2, 16), 0, .2, 0));
-      tinyFace(g, 2.2, 1.75, 1);
+      if(cols[2] !== false) tinyFace(g, 2.2, 1.75, 1);
     }
     g.scale.setScalar(s || 1);
     return g;
@@ -971,6 +1072,23 @@ var WORLD = (function(){
   }
 
   /* ---------------- scene plumbing ---------------- */
+  function rngFor(seed){
+    var st = seed * 7919 % 233280;
+    return function(){ st = (st * 9301 + 49297) % 233280; return st / 233280; };
+  }
+  function scatterMesh(geo, color, spots, scaleY){
+    var m = new THREE.InstancedMesh(keep(geo), mat(color), spots.length);
+    var d = new THREE.Object3D();
+    for(var i=0;i<spots.length;i++){
+      d.position.set(spots[i][0], spots[i][3] || 0, spots[i][1]);
+      d.scale.set(spots[i][2], spots[i][2] * (scaleY || 1), spots[i][2]);
+      d.rotation.y = spots[i][4] || 0;
+      d.updateMatrix();
+      m.setMatrixAt(i, d.matrix);
+    }
+    m.instanceMatrix.needsUpdate = true;
+    return m;
+  }
   function disposeScene(s){
     if(!s) return;
     s.traverse(function(o){ if(o.geometry && o.geometry.dispose) o.geometry.dispose(); });
@@ -999,7 +1117,7 @@ var WORLD = (function(){
     pv = { scene:scene, turn:turn, ch:ch, candy:candy, spin:.5, drag:false, last:0 };
   }
 
-  function buildLevel(level, cfg){
+  function buildLevel(level, cfg, opts){
     disposeScene(lv && lv.scene);
     var scene = new THREE.Scene(), i, a;
     scene.background = new THREE.Color(level.sky[0]);
@@ -1010,13 +1128,13 @@ var WORLD = (function(){
     ground.rotation.x = -Math.PI/2; scene.add(ground);
 
     var seed = level.id * 1.7;
-    for(i=0;i<12;i++){
+    for(i=0;i<18;i++){
       var far = i % 2 === 0;
       var hr = 13 + (i%4)*9;
       var hill = sph(hr, far ? level.far : level.near, 18, 12);
       hill.scale.y = .40;
-      hill.position.set(-span*1.12 + i*(span*2.24/11) + Math.sin(seed + i)*14, -hr * .26,
-                        (i % 2 ? 1 : -1) * (58 + ((i*5) % 4) * 26));
+      hill.position.set(-span*1.15 + i*(span*2.3/17) + Math.sin(seed + i*1.4)*15, -hr * .26,
+                        (i % 2 ? 1 : -1) * (54 + ((i*5) % 5) * 22));
       scene.add(hill);
     }
 
@@ -1045,24 +1163,59 @@ var WORLD = (function(){
       colorsFor.push([pr[4], pr[5]]);
     }
     if(!kinds.length){ kinds = ["bush"]; colorsFor = [["#FF8FB4","#E8608F"]]; }
-    var propCount = Math.max(16, level.steps + 6);
+    var rand = rngFor(level.id * 31 + 7);
+    function pathZAt(x){
+      var tt = Math.max(0, Math.min(1, (x + span) / (span * 2)));
+      return curve.getPointAt(tt).z;
+    }
+    var propCount = Math.round(level.steps * 1.5) + 14;
     for(i=0;i<propCount;i++){
       var t = (i + .5) / propCount;
       var cp = curve.getPointAt(t), tg = curve.getTangentAt(t);
       var side = (i % 2) ? 1 : -1;
-      var off = 14 + ((i * 7) % 5) * 3.6;
-      var px = cp.x - tg.z * side * off, pz = cp.z + tg.x * side * off;
+      var off = 13 + ((i * 7) % 6) * 4.2;
       var k = i % kinds.length;
-      var pm = propMesh(kinds[k], colorsFor[k], .8 + ((i*3)%4) * .18);
-      pm.position.set(px, 0, pz);
-      pm.rotation.y = (i % 5) * .4;
+      var faceIt = (i % 3 === 0);
+      var pm = propMesh(kinds[k], [colorsFor[k][0], colorsFor[k][1], faceIt], .75 + ((i*3)%5) * .17);
+      pm.position.set(cp.x - tg.z * side * off, 0, cp.z + tg.x * side * off);
+      pm.rotation.y = (i % 6) * .38;
       scene.add(pm);
     }
-    for(i=0;i<6;i++){
-      a = seed + i * 1.3;
+    var farCount = Math.round(propCount * .55);
+    for(i=0;i<farCount;i++){
+      var t2 = (i + .25) / farCount;
+      var cp2 = curve.getPointAt(t2), tg2 = curve.getTangentAt(t2);
+      var side2 = (i % 2) ? -1 : 1;
+      var off2 = 40 + ((i * 5) % 6) * 6.5;
+      var k2 = (i + 1) % kinds.length;
+      var pm2 = propMesh(kinds[k2], colorsFor[k2], .55 + ((i*7)%4) * .14, true);
+      pm2.position.set(cp2.x - tg2.z * side2 * off2, 0, cp2.z + tg2.x * side2 * off2);
+      pm2.rotation.y = (i % 5) * .5;
+      scene.add(pm2);
+    }
+    var pebbles = [], tufts = [], trunks = [], tops = [], px, pz, psc;
+    for(i=0;i<150;i++){
+      px = (rand()*2 - 1) * span * 1.08; pz = (rand()*2 - 1) * 78;
+      if(Math.abs(pz - pathZAt(px)) < 7.6) continue;
+      psc = .5 + rand()*1.0;
+      (i % 2 ? tufts : pebbles).push([px, pz, psc, 0, rand()*3.1]);
+    }
+    for(i=0;i<46;i++){
+      px = -span*1.1 + (i/46) * span * 2.2 + rand()*8;
+      pz = (i % 2 ? 1 : -1) * (88 + rand()*34);
+      psc = 1.5 + rand()*1.3;
+      trunks.push([px, pz, psc, 0, 0]);
+      tops.push([px, pz, psc, 5.5 * psc, rand()*3]);
+    }
+    if(pebbles.length) scene.add(scatterMesh(new THREE.SphereGeometry(.85, 8, 6), level.edge, pebbles, .8));
+    if(tufts.length) scene.add(scatterMesh(new THREE.ConeGeometry(.85, 2.2, 7), level.near, tufts, 1));
+    scene.add(scatterMesh(new THREE.CylinderGeometry(.5, .7, 5.5, 7), "#D99B5F", trunks, 1));
+    scene.add(scatterMesh(new THREE.SphereGeometry(3.4, 10, 8), level.far, tops, .85));
+    for(i=0;i<11;i++){
+      a = seed + i * .92;
       var cl = cloudMesh(level.cloud);
-      cl.position.set(Math.cos(a)*span*.9 - 20, 26 + (i%3)*7, Math.sin(a)*80 - 30);
-      cl.scale.setScalar(.9 + (i%3)*.35);
+      cl.position.set(Math.cos(a)*span*.95 - 16, 24 + (i%4)*8, Math.sin(a)*86 - 26);
+      cl.scale.setScalar(.85 + (i%4)*.32);
       scene.add(cl);
     }
     var hasSun = level.props.some(function(p){ return p[0] === "sun"; });
@@ -1080,13 +1233,33 @@ var WORLD = (function(){
     var ch = buildChar(cfg);
     scene.add(ch);
 
-    lv = { scene:scene, curve:curve, steps:level.steps, markers:markers, ch:ch,
-           cur:0, from:0, to:0, animAt:0, animMs:0, hop:0, level:level };
+    var npcs = [];
+    if(opts && opts.npcs){
+      for(i=0;i<opts.npcs.length;i++){
+        var spec = opts.npcs[i];
+        var np = curve.getPointAt(spec.t), nt = curve.getTangentAt(spec.t);
+        var nx = np.x - nt.z * spec.side * spec.off, nz = np.z + nt.x * spec.side * spec.off;
+        var ng = buildChar(spec.look);
+        ng.position.set(nx, BASE_Y, nz);
+        var mark = new THREE.Group();
+        mark.add(at(cyl(.32, .32, 1.5, "#FFD86B", 8), 0, 7.2, 0));
+        mark.add(at(sph(.36, "#FFD86B"), 0, 6.0, 0));
+        mark.add(at(cyl(1.15, 1.15, .12, "#FFD86B", 16), 0, .2, 0));
+        ng.add(mark);
+        scene.add(ng);
+        npcs.push({ g:ng, mark:mark, x:nx, z:nz, i:i, done:!!spec.done });
+        if(spec.done) mark.visible = false;
+      }
+    }
+
+    lv = { scene:scene, curve:curve, steps:level.steps, markers:markers, ch:ch, npcs:npcs,
+           span:span, walk:0, near:-1, cur:0, from:0, to:0, animAt:0, animMs:0, hop:0, level:level };
     placeAt(0);
     var o0 = camOffset();
     camera.position.set(lv.pos.x - o0.side, o0.up, lv.pos.z + o0.back);
   }
 
+  var roam = { x:0, z:0, cb:null }, lastT = 0;
   var BASE_Y = .30, lookY = -1.6, hudLift = 0;
   function setFraming(hudFrac){
     hudLift = Math.max(0, hudFrac - .3) * 5;
@@ -1145,6 +1318,55 @@ var WORLD = (function(){
       pv.candy.rotation.y = t*.25;
       pv.candy.children.forEach(function(c,i){ c.position.y += Math.sin(t*1.3 + i)*.004; });
       renderer.render(pv.scene, camera);
+      return;
+    }
+    if(mode === "roam" && lv){
+      var dt = lastT ? Math.min(.06, (now - lastT)/1000) : .016;
+      lastT = now;
+      var rc = lv.ch, vx = roam.x, vz = roam.z;
+      var len = Math.sqrt(vx*vx + vz*vz);
+      if(len > .12){
+        if(len > 1){ vx /= len; vz /= len; }
+        rc.position.x = Math.max(-lv.span, Math.min(lv.span, rc.position.x + vx*17*dt));
+        rc.position.z = Math.max(-52, Math.min(52, rc.position.z + vz*17*dt));
+        lv.walk += dt * 11;
+        rc.position.y = BASE_Y + Math.abs(Math.sin(lv.walk)) * .5;
+        var faceCam = Math.atan2(camera.position.x - rc.position.x, camera.position.z - rc.position.z);
+        var wantA = Math.atan2(vx, vz), d1 = wantA - faceCam;
+        while(d1 > Math.PI) d1 -= Math.PI*2;
+        while(d1 < -Math.PI) d1 += Math.PI*2;
+        d1 = Math.max(-1.25, Math.min(1.25, d1));
+        var tgt = faceCam + d1, dd = tgt - rc.rotation.y;
+        while(dd > Math.PI) dd -= Math.PI*2;
+        while(dd < -Math.PI) dd += Math.PI*2;
+        rc.rotation.y += dd * .2;
+      } else {
+        lv.walk = 0;
+        rc.position.y = BASE_Y + Math.abs(Math.sin(t*2.0)) * .16;
+      }
+      if(rc.userData.shadow){
+        var lift2 = rc.position.y - BASE_Y;
+        rc.userData.shadow.position.y = .06 - lift2;
+        rc.userData.shadow.scale.setScalar(Math.max(.6, 1 - lift2 * .2));
+      }
+      var o2 = camOffset();
+      camera.position.lerp(new THREE.Vector3(rc.position.x, o2.up + 2.6, rc.position.z + o2.back + 3.5), .09);
+      camera.lookAt(rc.position.x, lookY + 2.4, rc.position.z);
+      var best = -1, bestD = 9;
+      for(var n=0;n<lv.npcs.length;n++){
+        var np2 = lv.npcs[n];
+        np2.mark.position.y = Math.sin(t*2.6 + n) * .35;
+        np2.mark.rotation.y = t * .9;
+        var dx = np2.x - rc.position.x, dz = np2.z - rc.position.z;
+        var dist = Math.sqrt(dx*dx + dz*dz);
+        if(dist < bestD){ bestD = dist; best = n; }
+        np2.g.rotation.y = Math.atan2(camera.position.x - np2.x, camera.position.z - np2.z) * .75;
+      }
+      if(best !== lv.near){
+        lv.near = best;
+        if(roam.cb) roam.cb(best);
+      }
+      renderer.render(lv.scene, camera);
       return;
     }
     if(mode === "level" && lv){
@@ -1244,9 +1466,25 @@ var WORLD = (function(){
     buildLevel(level, cfg);
     return true;
   }
+  function showRoam(node, level, cfg, npcs){
+    if(!ok) return false;
+    setMode("roam");
+    mount(node);
+    buildLevel(level, cfg, { npcs:npcs });
+    lastT = 0; roam.x = 0; roam.z = 0; lv.near = -1;
+    var st0 = lv.curve.getPointAt(.12);
+    lv.ch.position.set(st0.x, BASE_Y, st0.z + 7);
+    camera.position.set(st0.x, 14, st0.z + 26);
+    return true;
+  }
+  function setRoamInput(x, z){ roam.x = x; roam.z = z; }
+  function onNear(cb){ roam.cb = cb; }
+  function npcDone(i){ if(lv && lv.npcs[i]){ lv.npcs[i].done = true; lv.npcs[i].mark.visible = false; } }
+  function npcShow(i){ if(lv && lv.npcs[i]) lv.npcs[i].mark.visible = true; }
   window.addEventListener("resize", resize);
   return { init:init, available:function(){ return ok; }, showPreview:showPreview, showLevel:showLevel,
-           moveTo:moveTo, mood:mood, resize:resize, mount:mount, setFraming:setFraming, cheer:cheer };
+           moveTo:moveTo, mood:mood, resize:resize, mount:mount, setFraming:setFraming, cheer:cheer,
+           showRoam:showRoam, setRoamInput:setRoamInput, onNear:onNear, npcDone:npcDone, npcShow:npcShow };
 })();
 </script>
 <script>
@@ -1255,9 +1493,9 @@ var WORLD = (function(){
   var L = ART.LEVELS, el = function(id){ return document.getElementById(id); };
   var screens = { make:el("screen-make"), home:el("screen-home"), dress:el("screen-dress"),
                   play:el("screen-play"), reward:el("screen-reward") };
-  var use3d = false;
+  var use3d = false, playMode = "trail";
 
-  /* ---------------- wardrobe ---------------- */
+  /* ================= wardrobe ================= */
   var STAR = "0,-8 2.12,-2.91 7.61,-2.47 3.42,1.11 4.7,6.47 0,3.6 -4.7,6.47 -3.42,1.11 -7.61,-2.47 -2.12,-2.91";
   function ic(inner){ return '<svg class="svgicon" viewBox="0 0 40 40">' + inner + '</svg>'; }
   var ITEMS = {
@@ -1266,9 +1504,10 @@ var WORLD = (function(){
       party:{ n:"Party hat", cond:{level:3}, icon:ic('<path d="M20 6l9 26H11z" fill="#FFD86B" stroke="#E8B23C" stroke-width="2"/><path d="M15 22h10M13 28h14" stroke="#FF8FB4" stroke-width="3"/><circle cx="20" cy="5" r="4" fill="#6FDCC4"/>') },
       flower:{ n:"Flower", cond:{level:5}, icon:ic('<g fill="#FF8FB4" stroke="#E8608F" stroke-width="1.5"><circle cx="20" cy="12" r="6"/><circle cx="28" cy="18" r="6"/><circle cx="25" cy="28" r="6"/><circle cx="15" cy="28" r="6"/><circle cx="12" cy="18" r="6"/></g><circle cx="20" cy="20" r="5" fill="#FFD86B"/>') },
       crown:{ n:"Crown", cond:{level:6}, icon:ic('<path d="M7 30L4 12l10 6 6-10 6 10 10-6-3 18z" fill="#FFD86B" stroke="#E8B23C" stroke-width="2" stroke-linejoin="round"/><circle cx="13" cy="22" r="2.4" fill="#FF6F9C"/><circle cx="20" cy="19" r="2.6" fill="#6FDCC4"/><circle cx="27" cy="22" r="2.4" fill="#9BC1FF"/>') },
-      beanie:{ n:"Beanie", cond:{correct:25}, icon:ic('<path d="M7 26a13 13 0 0 1 26 0z" fill="#6FDCC4"/><rect x="5" y="25" width="30" height="7" rx="3.5" fill="#4FCDB4"/><circle cx="20" cy="9" r="4" fill="#FF8FB4"/>') },
+      beanie:{ n:"Beanie", cond:{correct:25}, icon:ic('<path d="M7 26a13 13 0 0 1 26 0z" fill="#7FB2F0"/><rect x="5" y="25" width="30" height="7" rx="3.5" fill="#5B8FD6"/><circle cx="20" cy="9" r="4" fill="#FF8FB4"/>') },
       bunny:{ n:"Bunny ears", cond:{correct:75}, icon:ic('<ellipse cx="14" cy="15" rx="4.5" ry="11" fill="#FFF0DB" stroke="#E0C7AE" stroke-width="1.6"/><ellipse cx="26" cy="15" rx="4.5" ry="11" fill="#FFF0DB" stroke="#E0C7AE" stroke-width="1.6"/><ellipse cx="14" cy="16" rx="2" ry="7" fill="#FF8FB4"/><ellipse cx="26" cy="16" rx="2" ry="7" fill="#FF8FB4"/><path d="M8 30a12 8 0 0 1 24 0" stroke="#FF8FB4" stroke-width="3" fill="none"/>') },
       chef:{ n:"Chef hat", cond:{correct:150}, icon:ic('<circle cx="13" cy="15" r="7" fill="#fff" stroke="#E0C7AE" stroke-width="1.6"/><circle cx="27" cy="15" r="7" fill="#fff" stroke="#E0C7AE" stroke-width="1.6"/><circle cx="20" cy="11" r="8" fill="#fff" stroke="#E0C7AE" stroke-width="1.6"/><rect x="12" y="20" width="16" height="12" rx="3" fill="#fff" stroke="#E0C7AE" stroke-width="1.6"/>') },
+      cap:{ n:"Explorer cap", cond:{quests:3}, icon:ic('<path d="M8 22a12 12 0 0 1 24 0z" fill="#E8734A"/><path d="M8 22h26a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4z" fill="#C95A36"/><circle cx="20" cy="9" r="3" fill="#FFD86B"/>') },
       star:{ n:"Star clip", cond:{streak:15}, icon:ic('<polygon transform="translate(20 20) scale(1.7)" points="'+STAR+'" fill="#FFD86B" stroke="#E8B23C" stroke-width="1.4"/>') }
     },
     face:{
@@ -1280,6 +1519,7 @@ var WORLD = (function(){
     },
     back:{
       wings:{ n:"Wings", cond:{streak:20}, icon:ic('<path d="M19 30C9 30 4 22 6 11c6 1 11 7 13 19z" fill="#FFF6FA" stroke="#E8CFD9" stroke-width="2"/><path d="M21 30c10 0 15-8 13-19-6 1-11 7-13 19z" fill="#FFF6FA" stroke="#E8CFD9" stroke-width="2"/>') },
+      pack:{ n:"Backpack", cond:{quests:8}, icon:ic('<rect x="9" y="12" width="22" height="22" rx="5" fill="#7FB2F0" stroke="#5B8FD6" stroke-width="2"/><rect x="9" y="20" width="22" height="6" fill="#5B8FD6"/><path d="M15 12V8a5 5 0 0 1 10 0v4" fill="none" stroke="#5B8FD6" stroke-width="3"/><circle cx="20" cy="23" r="2.2" fill="#FFD86B"/>') },
       cape:{ n:"Cape", cond:{allLands:true}, icon:ic('<path d="M12 8h16l6 24H6z" fill="#C9A3F2" stroke="#A377D6" stroke-width="2" stroke-linejoin="round"/><rect x="11" y="6" width="18" height="5" rx="2.5" fill="#A377D6"/>') },
       balloon:{ n:"Balloon", cond:{score:400}, icon:ic('<ellipse cx="20" cy="15" rx="10" ry="12" fill="#FF8FB4" stroke="#E8608F" stroke-width="2"/><path d="M20 27v10" stroke="#E0C7AE" stroke-width="2"/><path d="M17 27h6l-3 3z" fill="#E8608F"/>') },
       wand:{ n:"Star wand", cond:{correct:300}, icon:ic('<path d="M13 34L26 16" stroke="#FFF0DB" stroke-width="4" stroke-linecap="round"/><polygon transform="translate(28 13) scale(1.5)" points="'+STAR+'" fill="#FFD86B" stroke="#E8B23C" stroke-width="1.4"/>') }
@@ -1287,14 +1527,100 @@ var WORLD = (function(){
   };
   var SLOTS = ["head","face","back"];
 
+  /* ================= the story ================= */
+  var TREAT = { 1:"sprinkles", 2:"cocoa beans", 3:"scoops", 4:"fizzy candies", 5:"gumdrops", 6:"candles" };
+  var STORY = {
+    1:[{ n:"Poppy", role:"sprinkle gardener", look:{base:"gumdrop",color:"mint",head:"bow"}, q:"word",
+         t:.24, side:1, off:15,
+         say:"The Sugar Festival is next week and my sprinkle rows are a muddle. Can you help me count them?",
+         end:"Now I know exactly how many. Take a handful for the road!" },
+       { n:"Waffle", role:"melting in a hurry", look:{base:"icecream",color:"lemon",face:"shades"}, q:"speed",
+         t:.55, side:-1, off:17,
+         say:"Race me! How many facts can you finish before my top scoop melts?",
+         end:"Whew, you're faster than the sunshine." },
+       { n:"Biscuit", role:"festival baker", look:{base:"cookie",color:"cocoa",head:"chef"}, q:"deliver", to:0,
+         t:.82, side:1, off:18,
+         say:"This cookie is still warm. Run it over to Poppy before it cools, would you?",
+         end:"Warm delivery! You're hired for the festival." }],
+    2:[{ n:"Nutmeg", role:"cocoa counter", look:{base:"macaron",color:"cocoa",face:"specs"}, q:"word",
+         t:.22, side:-1, off:16,
+         say:"Every sack of cocoa beans has to be counted before the festival. Two heads are faster than one!",
+         end:"Every bean accounted for. Marvellous." },
+       { n:"Cinnamon", role:"canyon runner", look:{base:"cupcake",color:"cocoa",head:"beanie"}, q:"speed",
+         t:.52, side:1, off:18,
+         say:"The canyon echo repeats any answer you shout. Quick ones only!",
+         end:"The whole canyon is shouting your answers back." },
+       { n:"Fudge", role:"lost a parcel", look:{base:"gumdrop",color:"grape",head:"party"}, q:"deliver", to:1,
+         t:.84, side:-1, off:17,
+         say:"I promised Cinnamon this parcel of fudge and my legs are short. Take it up the trail?",
+         end:"Cinnamon got the fudge. You saved my afternoon." }],
+    3:[{ n:"Frostine", role:"scoop sculptor", look:{base:"icecream",color:"blueberry",head:"crown"}, q:"word",
+         t:.26, side:1, off:16,
+         say:"I am building an ice sculpture out of scoops and I keep losing count of the layers.",
+         end:"Perfect. The sculpture will be the tallest one yet." },
+       { n:"Chilly", role:"snow tester", look:{base:"gumdrop",color:"blueberry",head:"beanie"}, q:"speed",
+         t:.58, side:-1, off:19,
+         say:"It is cold out here! Rattle off some facts with me and we will both warm up.",
+         end:"Toasty. Well, less freezing anyway." },
+       { n:"Snowcap", role:"sled courier", look:{base:"macaron",color:"mint",head:"bunny"}, q:"deliver", to:0,
+         t:.85, side:1, off:18,
+         say:"Frostine forgot her mitten. Sled it back to her before the sculpture freezes her fingers!",
+         end:"One warm mitten delivered. Thank you!" }],
+    4:[{ n:"Zesty", role:"lemonade stand boss", look:{base:"cupcake",color:"lemon",head:"star"}, q:"word",
+         t:.23, side:-1, off:16,
+         say:"The stand is slammed and I cannot work out how many fizzy candies to pour. Help me?",
+         end:"Now the lemonade line will finally move." },
+       { n:"Bubbles", role:"fizz inspector", look:{base:"donut",color:"mint",face:"hearts"}, q:"speed",
+         t:.54, side:1, off:18,
+         say:"Every bubble pops after a few seconds. Answer while they last!",
+         end:"You beat the bubbles. Nobody beats the bubbles." },
+       { n:"Coral", role:"beach picnicker", look:{base:"macaron",color:"strawberry",head:"flower"}, q:"deliver", to:1,
+         t:.86, side:-1, off:17,
+         say:"Bubbles left her picnic basket on my towel. Would you carry it back over?",
+         end:"Basket returned, picnic saved." }],
+    5:[{ n:"Violet", role:"grove keeper", look:{base:"gumdrop",color:"grape",head:"flower"}, q:"word",
+         t:.25, side:1, off:16,
+         say:"The gumdrop trees dropped their fruit in neat piles. Care to help me sort out how many?",
+         end:"Sorted! The grove thanks you." },
+       { n:"Gummy", role:"bouncy neighbour", look:{base:"cookie",color:"grape",head:"bunny"}, q:"speed",
+         t:.56, side:-1, off:19,
+         say:"I bounce higher with every right answer. Let us see how high I get!",
+         end:"I can see the castle from up here!" },
+       { n:"Berry", role:"jam maker", look:{base:"donut",color:"strawberry",head:"crown"}, q:"deliver", to:0,
+         t:.87, side:1, off:18,
+         say:"This jar of jam belongs to Violet. Mind taking it through the grove?",
+         end:"Violet has her jam. The grove smells wonderful." }],
+    6:[{ n:"Duchess Vanilla", role:"festival host", look:{base:"macaron",color:"lemon",head:"crown"}, q:"word",
+         t:.24, side:-1, off:17,
+         say:"The festival cake needs exactly the right number of candles. Will you count with me?",
+         end:"Splendid. The cake will be lit perfectly." },
+       { n:"Sparks", role:"candle lighter", look:{base:"icecream",color:"strawberry",head:"party"}, q:"speed",
+         t:.55, side:1, off:18,
+         say:"I light one candle per right answer. Ready? Go go go!",
+         end:"The whole cake is glowing. Look at that." },
+       { n:"Chef Marzi", role:"castle pastry chef", look:{base:"cookie",color:"lemon",head:"chef"}, q:"deliver", to:0,
+         t:.88, side:-1, off:18,
+         say:"Take this icing to the Duchess. The festival cannot start without it!",
+         end:"The cake is finished. The Sugar Festival can begin!" }]
+  };
+  var WORDS = [
+    { op:"mult", s:"{who} is filling {a} boxes with {b} {thing} in each box. How many {thing} is that?" },
+    { op:"mult", s:"The tray has {a} rows with {b} {thing} in every row. How many {thing} altogether?" },
+    { op:"mult", s:"{a} friends each bring {b} {thing} to the festival. How many {thing} arrive?" },
+    { op:"div",  s:"{P} {thing} are shared equally by {b} friends. How many does each friend get?" },
+    { op:"div",  s:"You have {P} {thing} and put {b} in each jar. How many jars can you fill?" },
+    { op:"div",  s:"{who} splits {P} {thing} into {b} equal piles. How many are in each pile?" }
+  ];
+
+  /* ================= save ================= */
   var save = {
     made:false,
     char:{ base:"cupcake", color:"strawberry", head:null, face:null, back:null },
-    unlocked:{}, done:0, best:{},
-    stats:{ correct:0, streak:0, score:0, perfect:false },
+    unlocked:{}, done:0, best:{}, quests:{}, sprinkles:0,
+    stats:{ correct:0, streak:0, score:0, perfect:false, quests:0 },
     prefs:{ mode:"mult", max:10, sound:true }
   };
-  var store = null, KEY = "sweet-trail-save-v3";
+  var store = null, KEY = "sweet-trail-save-v4";
 
   function load(){
     try{
@@ -1303,8 +1629,10 @@ var WORLD = (function(){
         var d = JSON.parse(raw);
         if(d && d.char){
           save.made = !!d.made; save.char = d.char; save.unlocked = d.unlocked || {};
-          save.done = d.done || 0; save.best = d.best || {};
+          save.done = d.done || 0; save.best = d.best || {}; save.quests = d.quests || {};
+          save.sprinkles = d.sprinkles || 0;
           save.stats = d.stats || save.stats;
+          if(save.stats.quests === undefined) save.stats.quests = 0;
           save.prefs = d.prefs || save.prefs;
           if(save.char.back === undefined) save.char.back = null;
         }
@@ -1319,14 +1647,25 @@ var WORLD = (function(){
     if(!window.claude || typeof window.claude.use !== "function") return;
     window.claude.use("db").then(function(db){
       if(!db) return;
-      store = db.doc("save/main-v3");
+      store = db.doc("save/main-v4");
       return store.get().then(function(doc){
         var d = doc && doc.save;
         if(d && d.made && (d.done || 0) >= save.done && !save.made){ save = d; persist(); boot(); }
       });
     }).catch(function(){ store = null; });
   }
+  function questsDone(landId){
+    var a = save.quests[landId] || [];
+    return a.filter(Boolean).length;
+  }
+  function questDone(landId, i){ return !!(save.quests[landId] && save.quests[landId][i]); }
+  function setQuestDone(landId, i){
+    if(!save.quests[landId]) save.quests[landId] = [false,false,false];
+    save.quests[landId][i] = true;
+    save.stats.quests = (save.stats.quests || 0) + 1;
+  }
 
+  /* ================= sound ================= */
   var actx = null;
   function beep(freqs, dur){
     if(!save.prefs.sound) return;
@@ -1345,13 +1684,13 @@ var WORLD = (function(){
     }catch(e){}
   }
 
+  /* ================= helpers ================= */
   function fmt(ms){ var t = Math.floor(ms/1000); return Math.floor(t/60) + ":" + ("0"+(t%60)).slice(-2); }
   function rnd(lo,hi){ return lo + Math.floor(Math.random()*(hi-lo+1)); }
   function levelOf(id){ for(var i=0;i<L.length;i++){ if(L[i].id === id) return L[i]; } return L[0]; }
   function unlockLevelFor(id){ return id <= save.done + 1; }
   function isUnlocked(kind,id){ return !!save.unlocked[kind+":"+id]; }
   function charTitle(){ return ART.COLORS[save.char.color].n + " " + ART.BASES[save.char.base].n; }
-
   function condText(c){
     if(c.level) return "Finish " + levelOf(c.level).name;
     if(c.streak) return "Get " + c.streak + " right in a row";
@@ -1359,6 +1698,7 @@ var WORLD = (function(){
     if(c.perfect) return "Finish a land with no misses";
     if(c.allLands) return "Finish every land";
     if(c.score) return "Score " + c.score + " in one land";
+    if(c.quests) return "Finish " + c.quests + " side quests";
     return "";
   }
   function condMet(c){
@@ -1369,6 +1709,7 @@ var WORLD = (function(){
     if(c.perfect) return !!st.perfect;
     if(c.allLands) return save.done >= L.length;
     if(c.score) return st.score >= c.score;
+    if(c.quests) return (st.quests || 0) >= c.quests;
     return false;
   }
   function checkUnlocks(){
@@ -1389,7 +1730,7 @@ var WORLD = (function(){
   function ownedCount(){ return Object.keys(save.unlocked).length; }
   function totalItems(){ return SLOTS.reduce(function(n,k){ return n + Object.keys(ITEMS[k]).length; }, 0); }
 
-  /* ---------------- stage ---------------- */
+  /* ================= stage ================= */
   var flat = { pathEl:null, len:0, walker:null, markers:[] };
   function stagePreview(node){
     if(!node) return;
@@ -1440,20 +1781,17 @@ var WORLD = (function(){
     else if(name === "home") stagePreview(el("homeStage"));
     else if(name === "dress") stagePreview(el("dressStage"));
     else if(name === "reward") stagePreview(el("rewardStage"));
-    else if(name === "play" && use3d){
-      framing();
-      WORLD.mount(el("scene3d"));
-      WORLD.resize();
-    }
+    else if(name === "play" && use3d){ framing(); WORLD.mount(el("scene3d")); WORLD.resize(); }
   }
   function framing(){
     if(!use3d) return;
-    var panel = el("qCard"), h = window.innerHeight || 700;
-    var frac = panel ? Math.min(.62, (panel.offsetHeight + 40) / h) : .4;
-    WORLD.setFraming(frac);
+    var panel = playMode === "trail" ? el("qCard") : el("questCard");
+    var h = window.innerHeight || 700;
+    var vis = panel && !panel.classList.contains("hidden") ? panel.offsetHeight : 190;
+    WORLD.setFraming(Math.min(.62, (vis + 40) / h));
   }
 
-  /* ---------------- pickers ---------------- */
+  /* ================= pickers ================= */
   function basePicker(host, name){
     if(!host) return;
     host.innerHTML = "";
@@ -1515,7 +1853,7 @@ var WORLD = (function(){
     else if(!screens.home.classList.contains("hidden")) stagePreview(el("homeStage"));
   }
 
-  /* ---------------- home ---------------- */
+  /* ================= home ================= */
   function chipRow(host, opts, current, onPick){
     host.innerHTML = "";
     opts.forEach(function(o){
@@ -1529,9 +1867,12 @@ var WORLD = (function(){
   }
   function renderHome(){
     el("homeName").textContent = charTitle();
+    var totalQuests = 0;
+    for(var k=1;k<=L.length;k++) totalQuests += questsDone(k);
     el("homeUnlocks").textContent = ownedCount()
-      ? (ownedCount() + " of " + totalItems() + " accessories unlocked \u00B7 " + save.stats.correct + " facts right")
-      : "No accessories yet \u2014 finish a land to unlock one";
+      ? (ownedCount() + " of " + totalItems() + " accessories \u00B7 " + totalQuests + " quests \u00B7 " +
+         save.sprinkles + " sprinkles")
+      : "No accessories yet \u2014 walk a trail or help a friend to earn one";
     chipRow(el("modeChips"), [{v:"mult",t:"\u00D7 Multiply"},{v:"div",t:"\u00F7 Divide"},{v:"mix",t:"A mix"}],
       save.prefs.mode, function(v){ save.prefs.mode = v; persist(); renderHome(); });
     chipRow(el("maxChips"), [{v:5,t:"Up to 5"},{v:10,t:"Up to 10"},{v:12,t:"Up to 12"}],
@@ -1540,26 +1881,41 @@ var WORLD = (function(){
     map.innerHTML = "";
     L.forEach(function(lv){
       var open = unlockLevelFor(lv.id);
-      var b = document.createElement("button");
-      b.type = "button";
-      b.className = "lvl" + (open ? "" : " locked") + (lv.id === save.done + 1 ? " current" : "");
+      var d = document.createElement("div");
+      d.className = "lvl" + (open ? "" : " locked") + (lv.id === save.done + 1 ? " current" : "");
       var best = save.best[lv.id];
       var note = !open ? "Locked" : (best ? "Best " + best.score : "Not played yet");
-      b.innerHTML = '<span class="thumbwrap">'+ART.scene(lv, save.char, {thumb:true, tag:"t"})+'</span>'+
-        '<span class="meta"><b>'+lv.id+". "+lv.name+'</b><i>'+note+' &middot; '+lv.steps+' steps</i></span>';
-      if(open) b.addEventListener("click", function(){ startLevel(lv.id); });
-      else b.setAttribute("aria-disabled","true");
-      map.appendChild(b);
+      d.innerHTML = '<span class="thumbwrap">'+ART.scene(lv, save.char, {thumb:true, tag:"t"})+'</span>'+
+        '<span class="meta"><b>'+lv.id+". "+lv.name+'</b><i>'+note+' &middot; '+lv.steps+' steps &middot; '+
+        questsDone(lv.id)+'/3 quests</i></span>'+
+        '<span class="lvlbtns"><button class="go" type="button">Trail</button>'+
+        '<button class="roam" type="button">Explore</button></span>';
+      var btns = d.querySelectorAll("button");
+      if(open){
+        btns[0].addEventListener("click", function(){ startLevel(lv.id); });
+        btns[1].addEventListener("click", function(){ startRoam(lv.id); });
+      } else {
+        btns[0].disabled = true; btns[1].disabled = true;
+      }
+      map.appendChild(d);
     });
   }
 
-  /* ---------------- play ---------------- */
-  var g = { lv:null, pos:0, score:0, correct:0, missed:0, combo:0, bestCombo:0, quick:0,
-            startedAt:0, elapsed:0, running:false, problem:null, entry:"", locked:false, last:"" };
-  var timerId = null;
-
-  function multFor(combo){ return Math.min(5, 1 + Math.floor(combo / 3)); }
-
+  /* ================= shared question bits ================= */
+  function makeFact(){
+    var mode = save.prefs.mode === "mix" ? (Math.random() < .5 ? "mult" : "div") : save.prefs.mode;
+    var a = rnd(2, save.prefs.max), b = rnd(2, save.prefs.max);
+    if(mode === "mult") return { text:a + " \u00D7 " + b, answer:a*b };
+    return { text:(a*b) + " \u00F7 " + b, answer:a };
+  }
+  function makeWordProblem(npc, landId){
+    var tpl = WORDS[Math.floor(Math.random()*WORDS.length)];
+    var a = rnd(2, save.prefs.max), b = rnd(2, Math.max(2, Math.min(save.prefs.max, 9)));
+    var thing = TREAT[landId] || "treats";
+    var s = tpl.s.replace("{who}", npc.n).replace(/\{thing\}/g, thing)
+                 .replace("{a}", a).replace(/\{b\}/g, b).replace(/\{P\}/g, a*b);
+    return { text:s, answer:(tpl.op === "mult" ? a*b : a) };
+  }
   function tapBind(node, fn){
     var last = 0;
     node.addEventListener("touchstart", function(e){
@@ -1570,23 +1926,36 @@ var WORLD = (function(){
     }, { passive:false });
     node.addEventListener("click", function(){ if(Date.now() - last < 800) return; fn(); });
   }
-  function buildPad(){
-    var pad = el("pad");
-    pad.innerHTML = "";
+  function buildPad(host, fn){
+    host.innerHTML = "";
     ["1","2","3","4","5","6","7","8","9","clear","0","back"].forEach(function(k){
       var b = document.createElement("button");
       b.type = "button";
       if(k === "clear"){ b.className = "key wipe"; b.textContent = "C"; b.setAttribute("aria-label","Clear"); }
       else if(k === "back"){ b.className = "key wipe"; b.innerHTML = "&#9003;"; b.setAttribute("aria-label","Delete a digit"); }
       else { b.className = "key"; b.textContent = k; }
-      tapBind(b, function(){ press(k); });
-      pad.appendChild(b);
+      tapBind(b, function(){ fn(k); });
+      host.appendChild(b);
     });
     var c = document.createElement("button");
     c.type = "button"; c.className = "key check"; c.textContent = "Check it";
-    tapBind(c, function(){ press("enter"); });
-    pad.appendChild(c);
+    tapBind(c, function(){ fn("enter"); });
+    host.appendChild(c);
   }
+  function popup(layer, text, bad){
+    var d = document.createElement("div");
+    d.className = "pop" + (bad ? " bad" : "");
+    d.textContent = text;
+    el(layer).appendChild(d);
+    setTimeout(function(){ d.remove(); }, 1250);
+  }
+
+  /* ================= trail play ================= */
+  var g = { lv:null, pos:0, score:0, correct:0, missed:0, combo:0, bestCombo:0, quick:0,
+            startedAt:0, elapsed:0, running:false, problem:null, entry:"", locked:false, last:"" };
+  var timerId = null;
+  function multFor(combo){ return Math.min(5, 1 + Math.floor(combo / 3)); }
+
   function press(k){
     if(g.locked) return;
     if(k === "clear") g.entry = "";
@@ -1595,30 +1964,17 @@ var WORLD = (function(){
     else if(g.entry.length < 3) g.entry += k;
     paintSlot();
   }
-  document.addEventListener("keydown", function(e){
-    if(screens.play.classList.contains("hidden")) return;
-    if(e.key >= "0" && e.key <= "9") press(e.key);
-    else if(e.key === "Enter") press("enter");
-    else if(e.key === "Backspace"){ e.preventDefault(); press("back"); }
-    else if(e.key === "Escape") press("clear");
-  });
   function paintSlot(){
     var s = el("slot");
     s.className = "answer-slot" + (g.entry ? "" : " empty");
     s.textContent = g.entry || "?";
   }
   function newProblem(){
-    var mode = save.prefs.mode === "mix" ? (Math.random() < .5 ? "mult" : "div") : save.prefs.mode;
-    var a,b,text,ans,guard = 0;
-    do{
-      a = rnd(2, save.prefs.max); b = rnd(2, save.prefs.max);
-      if(mode === "mult"){ text = a + " \u00D7 " + b; ans = a*b; }
-      else { text = (a*b) + " \u00F7 " + b; ans = a; }
-      guard++;
-    } while(text === g.last && guard < 14);
-    g.last = text;
-    g.problem = { text:text, answer:ans, at:Date.now() };
-    el("problem").textContent = text + " =";
+    var p, guard = 0;
+    do{ p = makeFact(); guard++; } while(p.text === g.last && guard < 14);
+    g.last = p.text;
+    g.problem = { text:p.text, answer:p.answer, at:Date.now() };
+    el("problem").textContent = p.text + " =";
     g.entry = ""; paintSlot();
     el("verdict").textContent = ""; el("verdict").className = "verdict";
   }
@@ -1638,21 +1994,8 @@ var WORLD = (function(){
     if(g.combo >= 3){
       badge.textContent = "\u00D7" + m + "  " + g.combo + " in a row";
       badge.classList.add("on");
-      if(bump){
-        badge.classList.remove("bump");
-        void badge.offsetWidth;
-        badge.classList.add("bump");
-      }
-    } else {
-      badge.classList.remove("on");
-    }
-  }
-  function popup(text, bad){
-    var d = document.createElement("div");
-    d.className = "pop" + (bad ? " bad" : "");
-    d.textContent = text;
-    el("popLayer").appendChild(d);
-    setTimeout(function(){ d.remove(); }, 1250);
+      if(bump){ badge.classList.remove("bump"); void badge.offsetWidth; badge.classList.add("bump"); }
+    } else badge.classList.remove("on");
   }
   function tick(){ if(!g.running) return; g.elapsed = Date.now() - g.startedAt; el("timeStat").textContent = fmt(g.elapsed); }
 
@@ -1662,14 +2005,12 @@ var WORLD = (function(){
     var right = parseInt(g.entry,10) === g.problem.answer;
     var slot = el("slot"), v = el("verdict");
     if(right){
-      var secs = (Date.now() - g.problem.at)/1000;
-      var fast = secs <= 3.5;
+      var secs = (Date.now() - g.problem.at)/1000, fast = secs <= 3.5;
       var speed = secs <= 1.5 ? 12 : Math.max(0, Math.round(12 - (secs - 1.5) * 2.2));
       g.combo++;
       if(g.combo > g.bestCombo) g.bestCombo = g.combo;
-      var mult = multFor(g.combo);
-      var gain = Math.round((10 + speed) * mult);
-      if(fast){ gain += 5; g.quick++; } else { g.quick = 0; }
+      var mult = multFor(g.combo), gain = Math.round((10 + speed) * mult);
+      if(fast){ gain += 5; g.quick++; } else g.quick = 0;
       var rush = 0;
       if(fast && g.quick > 0 && g.quick % 3 === 0){ rush = 25 * mult; gain += rush; }
       g.score += gain; g.correct++;
@@ -1680,14 +2021,13 @@ var WORLD = (function(){
       v.className = "verdict right";
       v.textContent = rush ? ("Speed treat! +" + rush + " bonus")
         : (mult > 1 ? ("Nice \u2014 " + g.combo + " in a row, \u00D7" + mult + " points") : "Yes! Keep walking.");
-      popup("+" + gain + (mult > 1 ? "  \u00D7" + mult : "") + (fast ? "  fast!" : ""));
+      popup("popLayer", "+" + gain + (mult > 1 ? "  \u00D7" + mult : "") + (fast ? "  fast!" : ""));
       paintCombo(true);
       stageMood("wow"); stageMove(g.pos, true);
       beep([Math.min(1180, 620 + g.combo*45), Math.min(1480, 840 + g.combo*45)], .09);
       paintStats();
       setTimeout(function(){
-        stageMood("happy");
-        g.locked = false;
+        stageMood("happy"); g.locked = false;
         if(g.pos >= g.lv.steps - 1) finish(); else newProblem();
       }, 640);
     } else {
@@ -1697,23 +2037,27 @@ var WORLD = (function(){
       v.className = "verdict wrong";
       v.textContent = g.problem.text + " = " + g.problem.answer + ". Back two steps.";
       el("qCard").classList.add("shake");
-      popup("\u22125", true);
+      popup("popLayer", "\u22125", true);
       paintCombo(false);
       stageMood("sad"); stageMove(g.pos, true);
       beep([300,200], .14);
       paintStats();
       setTimeout(function(){
         el("qCard").classList.remove("shake");
-        stageMood("happy");
-        g.locked = false; newProblem();
+        stageMood("happy"); g.locked = false; newProblem();
       }, 1900);
     }
   }
 
   function startLevel(id){
+    playMode = "trail";
     g.lv = levelOf(id);
     g.pos = 0; g.score = 0; g.correct = 0; g.missed = 0; g.combo = 0; g.bestCombo = 0; g.quick = 0;
     g.entry = ""; g.locked = false; g.elapsed = 0; g.startedAt = Date.now(); g.running = true;
+    el("hudTrail").classList.remove("hidden");
+    el("hudRoam").classList.add("hidden");
+    el("dlgCard").classList.add("hidden");
+    el("questCard").classList.add("hidden");
     show("play");
     stageLevel(g.lv);
     newProblem(); paintStats(); paintCombo(false);
@@ -1729,7 +2073,6 @@ var WORLD = (function(){
     var bonus = Math.max(25, g.lv.steps * 12 - Math.floor(g.elapsed/1000));
     var comboBonus = g.bestCombo >= 5 ? g.bestCombo * 5 : 0;
     g.score += bonus + comboBonus;
-
     if(g.lv.id > save.done) save.done = g.lv.id;
     if(g.missed === 0) save.stats.perfect = true;
     if(g.score > (save.stats.score || 0)) save.stats.score = g.score;
@@ -1737,16 +2080,8 @@ var WORLD = (function(){
     if(best) save.best[g.lv.id] = { score:g.score, time:g.elapsed };
     persist();
     var prizes = checkUnlocks();
-
     el("rewardTitle").textContent = g.missed === 0 ? "Perfect walk!" : ("You finished " + g.lv.name + "!");
-    var box = el("rewardPrizes");
-    box.innerHTML = "";
-    prizes.forEach(function(p){
-      var d = document.createElement("div");
-      d.className = "prize";
-      d.innerHTML = '<span class="thumb">' + ITEMS[p.kind][p.id].icon + '</span>' + p.n;
-      box.appendChild(d);
-    });
+    showPrizes(prizes);
     el("rewardWhat").textContent = prizes.length
       ? (prizes.length === 1 ? "New accessory unlocked \u2014 you're wearing it!" : "You unlocked " + prizes.length + " accessories!")
       : "No new accessory this time \u2014 check Dress up to see what's close.";
@@ -1761,6 +2096,16 @@ var WORLD = (function(){
     beep([523,659,784,1047], .11);
     show("reward");
     confetti();
+  }
+  function showPrizes(prizes){
+    var box = el("rewardPrizes");
+    box.innerHTML = "";
+    prizes.forEach(function(p){
+      var d = document.createElement("div");
+      d.className = "prize";
+      d.innerHTML = '<span class="thumb">' + ITEMS[p.kind][p.id].icon + '</span>' + p.n;
+      box.appendChild(d);
+    });
   }
   function confetti(){
     if(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -1779,7 +2124,318 @@ var WORLD = (function(){
     }
   }
 
-  /* ---------------- wiring ---------------- */
+  /* ================= free roam ================= */
+  var r = { lv:null, near:-1, npcs:[], quest:null, keys:{}, sx:0, sz:0 };
+
+  function startRoam(id){
+    playMode = "roam";
+    r.lv = levelOf(id);
+    r.near = -1; r.quest = null;
+    r.npcs = STORY[id].map(function(s, i){
+      return { n:s.n, role:s.role, look:s.look, q:s.q, to:s.to, say:s.say, end:s.end,
+               t:s.t, side:s.side, off:s.off, done:questDone(id, i), i:i };
+    });
+    el("hudTrail").classList.add("hidden");
+    el("hudRoam").classList.remove("hidden");
+    el("dlgCard").classList.add("hidden");
+    el("questCard").classList.add("hidden");
+    el("popLayer2").innerHTML = "";
+    show("play");
+    if(use3d){
+      WORLD.showRoam(el("scene3d"), r.lv, save.char, r.npcs);
+      WORLD.onNear(function(i){
+        r.near = i;
+        var btn = el("talkBtn");
+        btn.disabled = (i < 0) || !!r.quest;
+        btn.textContent = i >= 0 ? ("Talk to " + r.npcs[i].n) : "Talk";
+      });
+    } else {
+      el("scene3d").innerHTML = '<div style="padding:30px;text-align:center;font-weight:800">' +
+        'Exploring needs 3D graphics, which this browser cannot run. The trail still works.</div>';
+    }
+    paintRoam();
+  }
+  function paintRoam(){
+    el("sprinkleStat").textContent = save.sprinkles;
+    el("questStat").textContent = questsDone(r.lv.id) + "/3";
+    var left = r.npcs.filter(function(n){ return !n.done; }).length;
+    if(r.quest && r.quest.stage === "walk"){
+      el("roamHint").textContent = "Take it to " + r.npcs[r.quest.to].n + " \u2014 follow the gold marker";
+    } else if(left === 0){
+      el("roamHint").textContent = "Every quest here is done. The festival thanks you!";
+    } else {
+      el("roamHint").textContent = "Walk up to a friend with a gold marker (" + left + " to help)";
+    }
+  }
+
+  /* --- joystick --- */
+  function setupStick(){
+    var stick = el("stick"), knob = el("stickKnob"), active = false, R = 46;
+    function move(clientX, clientY){
+      var b = stick.getBoundingClientRect();
+      var dx = clientX - (b.left + b.width/2), dy = clientY - (b.top + b.height/2);
+      var len = Math.sqrt(dx*dx + dy*dy);
+      if(len > R){ dx = dx/len*R; dy = dy/len*R; }
+      knob.style.transform = "translate(" + dx + "px," + dy + "px)";
+      r.sx = dx / R; r.sz = dy / R;
+      pushInput();
+    }
+    function stop(){
+      active = false;
+      knob.style.transform = "";
+      r.sx = 0; r.sz = 0; pushInput();
+    }
+    stick.addEventListener("pointerdown", function(e){
+      active = true;
+      if(stick.setPointerCapture) { try{ stick.setPointerCapture(e.pointerId); }catch(err){} }
+      move(e.clientX, e.clientY); e.preventDefault();
+    });
+    stick.addEventListener("pointermove", function(e){ if(active) move(e.clientX, e.clientY); });
+    stick.addEventListener("pointerup", stop);
+    stick.addEventListener("pointercancel", stop);
+    stick.addEventListener("pointerleave", function(){ if(active) stop(); });
+  }
+  function pushInput(){
+    if(!use3d || playMode !== "roam") return;
+    var kx = (r.keys.right ? 1 : 0) - (r.keys.left ? 1 : 0);
+    var kz = (r.keys.down ? 1 : 0) - (r.keys.up ? 1 : 0);
+    var x = r.quest && r.quest.stage !== "walk" ? 0 : (r.sx || kx);
+    var z = r.quest && r.quest.stage !== "walk" ? 0 : (r.sz || kz);
+    WORLD.setRoamInput(x, z);
+  }
+
+  /* --- dialogue --- */
+  function openDialogue(i, closing){
+    var npc = r.npcs[i];
+    el("dlgFace").innerHTML = ART.charSVG(npc.look, "happy");
+    el("dlgName").textContent = npc.n;
+    el("dlgRole").textContent = npc.role;
+    el("dlgText").textContent = closing ? npc.end : npc.say;
+    el("dlgYes").textContent = closing ? "Yay!" : (npc.q === "deliver" ? "I'll take it!" : "Let's go!");
+    el("dlgNo").classList.toggle("hidden", !!closing);
+    el("dlgCard").classList.remove("hidden");
+    el("dlgCard").dataset.npc = i;
+    el("dlgCard").dataset.closing = closing ? "1" : "";
+    el("talkBtn").disabled = true;
+    pushInput();
+  }
+  function closeDialogue(){
+    el("dlgCard").classList.add("hidden");
+    el("talkBtn").disabled = r.near < 0;
+    pushInput();
+  }
+
+  /* --- quests --- */
+  function startQuest(i){
+    var npc = r.npcs[i];
+    r.quest = { npc:i, type:npc.q, to:npc.to, stage:"ask", n:0, correct:0, entry:"", locked:false,
+                problem:null, goal:0, endsAt:0 };
+    if(npc.q === "word"){ r.quest.goal = 3; nextQuestProblem(); }
+    else if(npc.q === "speed"){ r.quest.goal = 8; r.quest.endsAt = Date.now() + 40000; startSpeedTimer(); nextQuestProblem(); }
+    else { r.quest.stage = "walk"; el("questCard").classList.add("hidden");
+           if(use3d) WORLD.npcShow(npc.to);
+           paintRoam(); pushInput(); return; }
+    el("questCard").classList.remove("hidden");
+    framing();
+  }
+  var speedTimer = null;
+  function startSpeedTimer(){
+    if(speedTimer) clearInterval(speedTimer);
+    speedTimer = setInterval(function(){
+      if(!r.quest || r.quest.type !== "speed"){ clearInterval(speedTimer); speedTimer = null; return; }
+      if(Date.now() >= r.quest.endsAt){ clearInterval(speedTimer); speedTimer = null; endQuest(); }
+      else paintQuest();
+    }, 250);
+  }
+  function nextQuestProblem(){
+    var q = r.quest, npc = r.npcs[q.npc];
+    if(q.type === "word"){
+      var w = makeWordProblem(npc, r.lv.id);
+      q.problem = { text:w.text, answer:w.answer, at:Date.now(), word:true };
+      el("qText").textContent = w.text;
+      el("qText").classList.remove("hidden");
+      el("qProblem").textContent = "";
+      el("qProblem").classList.add("hidden");
+    } else {
+      var f = makeFact();
+      q.problem = { text:f.text, answer:f.answer, at:Date.now(), word:false };
+      el("qText").classList.add("hidden");
+      el("qProblem").classList.remove("hidden");
+      el("qProblem").textContent = f.text + " =";
+    }
+    q.entry = ""; q.locked = false;
+    paintQSlot();
+    el("qVerdict").textContent = ""; el("qVerdict").className = "verdict";
+    paintQuest();
+  }
+  function paintQuest(){
+    var q = r.quest; if(!q) return;
+    if(q.type === "word") el("qGoal").innerHTML = "Word problem <b>" + (q.n + 1) + "</b> of " + q.goal;
+    else if(q.type === "speed"){
+      var left = Math.max(0, Math.ceil((q.endsAt - Date.now())/1000));
+      el("qGoal").innerHTML = "Speed round \u00B7 <b>" + left + "s</b> left \u00B7 " + q.correct + " right (goal " + q.goal + ")";
+    } else el("qGoal").innerHTML = "Say thanks with <b>" + (q.goal - q.n) + "</b> quick facts";
+  }
+  function paintQSlot(){
+    var s = el("qSlot"), q = r.quest;
+    s.className = "answer-slot" + (q && q.entry ? "" : " empty");
+    s.textContent = (q && q.entry) || "?";
+  }
+  function qPress(k){
+    var q = r.quest;
+    if(!q || q.locked || q.stage === "walk") return;
+    if(k === "clear") q.entry = "";
+    else if(k === "back") q.entry = q.entry.slice(0,-1);
+    else if(k === "enter"){ qSubmit(); return; }
+    else if(q.entry.length < 3) q.entry += k;
+    paintQSlot();
+  }
+  function qSubmit(){
+    var q = r.quest;
+    if(!q || !q.problem || q.entry === "") return;
+    q.locked = true;
+    var right = parseInt(q.entry,10) === q.problem.answer;
+    if(right){
+      q.correct++; save.stats.correct++;
+      el("qSlot").className = "answer-slot right";
+      el("qVerdict").className = "verdict right";
+      el("qVerdict").textContent = "That's it!";
+      popup("popLayer2", "+1");
+      beep([700,920], .08);
+    } else {
+      el("qSlot").className = "answer-slot wrong";
+      el("qVerdict").className = "verdict wrong";
+      el("qVerdict").textContent = "Not quite \u2014 the answer is " + q.problem.answer + ".";
+      el("questCard").classList.add("shake");
+      beep([300,220], .12);
+    }
+    q.n++;
+    var wait = right ? 620 : 1700;
+    setTimeout(function(){
+      el("questCard").classList.remove("shake");
+      if(!r.quest) return;
+      if(q.type === "speed"){
+        if(Date.now() >= q.endsAt) endQuest(); else nextQuestProblem();
+      } else if(q.n >= q.goal) endQuest();
+      else nextQuestProblem();
+    }, wait);
+  }
+  function endQuest(){
+    var q = r.quest; if(!q) return;
+    if(speedTimer){ clearInterval(speedTimer); speedTimer = null; }
+    var npc = r.npcs[q.npc], win = true, gain = 0;
+    if(q.type === "word"){ gain = 10 + q.correct * 10; }
+    else if(q.type === "speed"){ win = q.correct >= q.goal; gain = win ? 35 + (q.correct - q.goal) * 5 : q.correct * 3; }
+    else { gain = 25 + q.correct * 5; }
+    el("questCard").classList.add("hidden");
+    r.quest = null;
+    pushInput();
+    if(win){
+      save.sprinkles += gain;
+      if(!npc.done){
+        npc.done = true;
+        setQuestDone(r.lv.id, npc.i);
+        if(use3d) WORLD.npcDone(npc.i);
+      }
+      if(q.to !== undefined && r.npcs[q.to] && r.npcs[q.to].done && use3d) WORLD.npcDone(q.to);
+      if(questsDone(r.lv.id) === 3){ save.sprinkles += 50; }
+      persist();
+      var prizes = checkUnlocks();
+      popup("popLayer2", "+" + gain + " sprinkles");
+      beep([523,659,784], .1);
+      openDialogue(npc.i, true);
+      if(prizes.length){
+        setTimeout(function(){
+          el("dlgText").textContent = npc.end + "  You also unlocked: " +
+            prizes.map(function(p){ return p.n; }).join(", ") + "!";
+        }, 40);
+      }
+    } else {
+      save.sprinkles += gain;
+      persist();
+      popup("popLayer2", "+" + gain + " sprinkles", false);
+      el("dlgFace").innerHTML = ART.charSVG(npc.look, "happy");
+      el("dlgName").textContent = npc.n;
+      el("dlgRole").textContent = npc.role;
+      el("dlgText").textContent = "So close \u2014 " + q.correct + " right! Come back and race me again any time.";
+      el("dlgYes").textContent = "Okay!";
+      el("dlgNo").classList.add("hidden");
+      el("dlgCard").dataset.closing = "1";
+      el("dlgCard").dataset.npc = npc.i;
+      el("dlgCard").classList.remove("hidden");
+    }
+    paintRoam();
+    framing();
+  }
+  function talkTo(i){
+    if(i < 0) return;
+    var npc = r.npcs[i];
+    if(r.quest && r.quest.stage === "walk"){
+      if(i === r.quest.to){
+        r.quest.stage = "facts"; r.quest.type = "deliver"; r.quest.goal = 2; r.quest.n = 0; r.quest.correct = 0;
+        el("questCard").classList.remove("hidden");
+        nextQuestProblem();
+        framing();
+      } else {
+        el("roamHint").textContent = "Take it to " + r.npcs[r.quest.to].n + " first!";
+      }
+      return;
+    }
+    if(npc.done){
+      el("dlgFace").innerHTML = ART.charSVG(npc.look, "happy");
+      el("dlgName").textContent = npc.n;
+      el("dlgRole").textContent = npc.role;
+      el("dlgText").textContent = npc.end;
+      el("dlgYes").textContent = "Bye!";
+      el("dlgNo").classList.add("hidden");
+      el("dlgCard").dataset.closing = "1";
+      el("dlgCard").dataset.npc = i;
+      el("dlgCard").classList.remove("hidden");
+      el("talkBtn").disabled = true;
+      pushInput();
+      return;
+    }
+    openDialogue(i, false);
+  }
+
+  /* ================= keyboard ================= */
+  document.addEventListener("keydown", function(e){
+    if(screens.play.classList.contains("hidden")) return;
+    if(playMode === "trail"){
+      if(e.key >= "0" && e.key <= "9") press(e.key);
+      else if(e.key === "Enter") press("enter");
+      else if(e.key === "Backspace"){ e.preventDefault(); press("back"); }
+      else if(e.key === "Escape") press("clear");
+      return;
+    }
+    if(r.quest && r.quest.stage !== "walk"){
+      if(e.key >= "0" && e.key <= "9") qPress(e.key);
+      else if(e.key === "Enter") qPress("enter");
+      else if(e.key === "Backspace"){ e.preventDefault(); qPress("back"); }
+      else if(e.key === "Escape") qPress("clear");
+      return;
+    }
+    var k = e.key.toLowerCase();
+    if(k === "arrowleft" || k === "a") r.keys.left = true;
+    else if(k === "arrowright" || k === "d") r.keys.right = true;
+    else if(k === "arrowup" || k === "w") r.keys.up = true;
+    else if(k === "arrowdown" || k === "s") r.keys.down = true;
+    else if(k === " " || k === "enter"){ if(!el("dlgCard").classList.contains("hidden")) el("dlgYes").click(); else talkTo(r.near); }
+    else return;
+    e.preventDefault();
+    pushInput();
+  });
+  document.addEventListener("keyup", function(e){
+    var k = e.key.toLowerCase();
+    if(k === "arrowleft" || k === "a") r.keys.left = false;
+    else if(k === "arrowright" || k === "d") r.keys.right = false;
+    else if(k === "arrowup" || k === "w") r.keys.up = false;
+    else if(k === "arrowdown" || k === "s") r.keys.down = false;
+    else return;
+    pushInput();
+  });
+
+  /* ================= wiring ================= */
   el("makeDone").addEventListener("click", function(){ save.made = true; persist(); renderHome(); show("home"); });
   el("dressBtn").addEventListener("click", function(){
     accPicker(el("dressHeads"), "head");
@@ -1787,8 +2443,7 @@ var WORLD = (function(){
     accPicker(el("dressBacks"), "back");
     basePicker(el("dressBases"), "dbase");
     colorPicker(el("dressColors"), "dcolor");
-    el("dressHint").textContent = ownedCount() + " of " + totalItems() +
-      " unlocked. Locked ones show how to earn them.";
+    el("dressHint").textContent = ownedCount() + " of " + totalItems() + " unlocked. Locked ones show how to earn them.";
     show("dress");
   });
   el("dressDone").addEventListener("click", function(){ persist(); renderHome(); show("home"); });
@@ -1799,17 +2454,35 @@ var WORLD = (function(){
     else { renderHome(); show("home"); }
   });
   el("quitBtn").addEventListener("click", function(){ stopTimer(); renderHome(); show("home"); });
-  el("soundBtn").addEventListener("click", function(){
+  el("quitBtn2").addEventListener("click", function(){
+    if(speedTimer){ clearInterval(speedTimer); speedTimer = null; }
+    r.quest = null;
+    if(use3d) WORLD.setRoamInput(0,0);
+    renderHome(); show("home");
+  });
+  el("talkBtn").addEventListener("click", function(){ talkTo(r.near); });
+  el("dlgYes").addEventListener("click", function(){
+    var i = parseInt(el("dlgCard").dataset.npc, 10);
+    var closing = el("dlgCard").dataset.closing === "1";
+    closeDialogue();
+    if(!closing) startQuest(i);
+  });
+  el("dlgNo").addEventListener("click", closeDialogue);
+  function soundToggle(btn){
     save.prefs.sound = !save.prefs.sound;
-    this.innerHTML = save.prefs.sound ? "&#128266;" : "&#128263;";
-    this.setAttribute("aria-label", save.prefs.sound ? "Turn sound off" : "Turn sound on");
+    var glyph = save.prefs.sound ? "&#128266;" : "&#128263;";
+    el("soundBtn").innerHTML = glyph;
+    el("soundBtn2").innerHTML = glyph;
     persist();
     if(save.prefs.sound) beep([880], .08);
-  });
+  }
+  el("soundBtn").addEventListener("click", function(){ soundToggle(); });
+  el("soundBtn2").addEventListener("click", function(){ soundToggle(); });
   el("resetBtn").addEventListener("click", function(){
-    if(!window.confirm("Start over? This clears your levels and accessories.")) return;
+    if(!window.confirm("Start over? This clears your levels, quests and accessories.")) return;
     save = { made:false, char:{base:"cupcake",color:"strawberry",head:null,face:null,back:null},
-             unlocked:{}, done:0, best:{}, stats:{correct:0,streak:0,score:0,perfect:false},
+             unlocked:{}, done:0, best:{}, quests:{}, sprinkles:0,
+             stats:{correct:0,streak:0,score:0,perfect:false,quests:0},
              prefs:{mode:"mult",max:10,sound:true} };
     persist(); boot();
   });
@@ -1820,7 +2493,8 @@ var WORLD = (function(){
   function boot(){
     basePicker(el("makeBases"), "mbase");
     colorPicker(el("makeColors"), "mcolor");
-    el("soundBtn").innerHTML = save.prefs.sound ? "&#128266;" : "&#128263;";
+    var glyph = save.prefs.sound ? "&#128266;" : "&#128263;";
+    el("soundBtn").innerHTML = glyph; el("soundBtn2").innerHTML = glyph;
     refreshChar();
     if(save.made){ renderHome(); show("home"); } else { show("make"); }
   }
@@ -1830,7 +2504,9 @@ var WORLD = (function(){
   if(!use3d){
     [].slice.call(document.querySelectorAll(".spin-hint")).forEach(function(n){ n.style.display = "none"; });
   }
-  buildPad();
+  buildPad(el("pad"), press);
+  buildPad(el("qPad"), qPress);
+  setupStick();
   boot();
   connectStore();
 })();
